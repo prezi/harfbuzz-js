@@ -1,0 +1,3 @@
+#!/bin/bash -e
+# Alias, sort of
+python2.7 "$@"
