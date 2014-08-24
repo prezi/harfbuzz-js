@@ -1,24 +1,6 @@
 group "org.harfbuzz"
 
-buildscript {
-	repositories {
-		mavenLocal()
-		maven {
-			credentials {
-				username nexusUser
-				password nexusPassword
-			}
-			url "https://artifactory.prezi.com/plugins"
-		}
-	}
-
-	dependencies {
-		classpath "com.prezi.gradle:gradle-prezi-plugin:4.+"
-	}
-}
-
 apply plugin: "maven"
-apply plugin: "prezi"
 
 String gitVersion
 if (hasProperty("release")) {
@@ -228,6 +210,14 @@ task testJs(type:Exec) {
 		"src/test/coffee/harfbuzzTest.coffee"
 }
 
+task test {
+	dependsOn testJs
+}
+
+task check {
+	dependsOn test
+}
+
 artifacts {
 	archives(compileEmccProduction.outputFile) {
 		name project.name
@@ -244,7 +234,20 @@ artifacts {
 
 uploadArchives {
 	repositories {
-		ivy preziUploadRepo("prezi-client")
+		if (hasProperty("nexusUser") && hasProperty("nexusPassword")) {
+			ivy {
+				if (hasProperty("release")) {
+					url "https://artifactory.prezi.com/prezi-client-release-local"
+				} else {
+					url "https://artifactory.prezi.com/prezi-client-snapshot-local"
+				}
+				layout "maven"
+				credentials {
+					username = property("nexusUser")
+					password = property("nexusPassword")
+				}
+			}
+		}
 	}
 }
 
