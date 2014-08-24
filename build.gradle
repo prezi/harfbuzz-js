@@ -233,6 +233,7 @@ artifacts {
 }
 
 uploadArchives {
+	dependsOn check
 	repositories {
 		if (hasProperty("nexusUser") && hasProperty("nexusPassword")) {
 			ivy {
