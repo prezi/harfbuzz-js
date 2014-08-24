@@ -1,0 +1,5 @@
+jdk:
+  - oraclejdk8
+env:
+  global:
+    - TERM=dumb
