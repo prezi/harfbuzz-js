@@ -208,8 +208,7 @@ task testJs(type:Exec) {
 	environment PATH: "${nodeDir}" + File.pathSeparator + System.getenv().get("PATH")
 
 	commandLine "node_modules/mocha/bin/mocha", "--compilers", "coffee:coffee-script/register", "-R", "spec",
-		"src/test/coffee/connectorTest.coffee",
-		"src/test/coffee/harfbuzzTest.coffee"
+		"src/test/coffee/*.coffee"
 }
 
 task test {
