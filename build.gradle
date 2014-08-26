@@ -175,6 +175,8 @@ tasks.withType(CompileEmcc) {
 	emccPath = "${emscriptenDir}/emcc"
 	source "${harfbuzzDir}/src/.libs/libharfbuzz.so"
 	source "${harfbuzzDir}/src/hb-ucdn/.libs/libhb-ucdn.a"
+	source "src/main/emscripten/HarfBuzzBindings.cpp"
+	includeDirectories.add "${harfbuzzDir}/src"
 	postJs = combineJsConnector.dest
 	bind = true
 	allowMemoryGrowth = true
@@ -264,6 +266,9 @@ class CompileEmcc extends SourceTask {
 
     String emccPath
 
+    @InputFiles
+    Set<File> includeDirectories = []
+
     @Optional
     @InputFile
     File preJs
@@ -336,6 +341,10 @@ class CompileEmcc extends SourceTask {
 		commandLine.addAll "-o", outputFile
 
 		commandLine.add "-O" + optimizationLevel
+
+		includeDirectories.each {
+			commandLine.addAll "-I", it
+		}
 
 		commandLine.addAll "--closure", (closure ? 1 : 0)
 
