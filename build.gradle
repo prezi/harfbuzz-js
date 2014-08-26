@@ -181,7 +181,7 @@ tasks.withType(CompileEmcc) {
 	memoryInitFile = false
 	reservedFunctionPointers = 1024
 	totalMemory = 64 * 1024 * 1024
-	optimizationLevel = 2
+	optimizationLevel = 0
 	exportedFunctions = EXPORTED_FUNCTIONS
 	deadFunctions = DEAD_FUNCTIONS
 	outputFile = file("${buildDir}/emcc/harfbuzz${type}.js")
