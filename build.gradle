@@ -176,6 +176,7 @@ tasks.withType(CompileEmcc) {
 	source "${harfbuzzDir}/src/.libs/libharfbuzz.so"
 	source "${harfbuzzDir}/src/hb-ucdn/.libs/libhb-ucdn.a"
 	postJs = combineJsConnector.dest
+	bind = true
 	allowMemoryGrowth = true
 	memoryInitFile = false
 	reservedFunctionPointers = 1024
@@ -307,6 +308,8 @@ class CompileEmcc extends SourceTask {
 	@Input
 	boolean asmJs = false
 
+	@Input
+	boolean bind = false
 
 	@TaskAction
 	void doCompile() {
@@ -328,6 +331,7 @@ class CompileEmcc extends SourceTask {
 		if (postJs != null) commandLine.addAll "--post-js", postJs
 		commandLine.addAll "--post-js", versionHeader
 
+		if (bind) commandLine.add "--bind"
 
 		commandLine.addAll "-o", outputFile
 
