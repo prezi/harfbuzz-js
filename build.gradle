@@ -220,6 +220,10 @@ task check {
 	dependsOn test
 }
 
+task build {
+	dependsOn assemble, check
+}
+
 artifacts {
 	archives(compileEmccProduction.outputFile) {
 		name project.name
