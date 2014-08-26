@@ -258,36 +258,56 @@ uploadArchives {
 	}
 }
 
-class CompileEmcc extends DefaultTask {
-    @InputFiles
-    @SkipWhenEmpty
-    FileCollection source = new org.gradle.api.internal.file.UnionFileCollection()
-
+class CompileEmcc extends SourceTask {
     @OutputFile
     File outputFile
 
     String emccPath
 
+    @Optional
+    @InputFile
     File preJs
+
+    @Optional
+    @InputFile
 	File postJs
+
+    @Input
 	String type = ""
+
+    @Input
 	List<String> exportedFunctions = new ArrayList<String>()
+
+    @Input
 	List<String> deadFunctions = new ArrayList<String>()
 
+	@Input
 	int reservedFunctionPointers = 0
+
+	@Input
 	int totalMemory = 16 * 1024 * 1024
+
+	@Input
 	int optimizationLevel = 0
+
+	@Input
 	boolean closure = false
+
+	@Input
 	boolean allowMemoryGrowth = true
+
+	@Input
 	int typedArraySupport = 2
+
+	@Input
 	boolean debug = false
+
+	@Input
 	boolean memoryInitFile = false
+
+	@Input
 	boolean asmJs = false
 
-    void source(paths)
-    {
-        source.add(project.files(paths))
-    }
 
 	@TaskAction
 	void doCompile() {
@@ -300,42 +320,43 @@ class CompileEmcc extends DefaultTask {
 		versionHeader << "Module['version'] = '${project.version}${type}';\n";
 		versionHeader << "Module['emccVersion'] = '${emccVersion}';\n";
 
-		def commandLine = emccPath
-		commandLine += " " + source.files.join(" ")
+		def commandLine = [ emccPath ]
+		commandLine.addAll source.files
 
-		if (debug) commandLine += " -g"
+		if (debug) commandLine.add "-g"
 
-		if (preJs != null) commandLine += " --pre-js " + preJs
-		if (postJs != null) commandLine += " --post-js " + postJs
-		commandLine += " --post-js " + versionHeader
+		if (preJs != null) commandLine.addAll "--pre-js", preJs
+		if (postJs != null) commandLine.addAll "--post-js", postJs
+		commandLine.addAll "--post-js", versionHeader
 
-		commandLine += " -o " + outputFile
 
-		commandLine += " -O" + optimizationLevel
+		commandLine.addAll "-o", outputFile
 
-		commandLine += " --closure " + (closure ? 1 : 0)
+		commandLine.add "-O" + optimizationLevel
 
-		commandLine += " --memory-init-file " + (memoryInitFile ? 1 : 0)
+		commandLine.addAll "--closure", (closure ? 1 : 0)
 
-		commandLine += " -s ALLOW_MEMORY_GROWTH=" + (allowMemoryGrowth ? 1 : 0)
+		commandLine.addAll "--memory-init-file", (memoryInitFile ? 1 : 0)
 
-		commandLine += " -s USE_TYPED_ARRAYS=" + typedArraySupport
+		commandLine.addAll "-s", "ALLOW_MEMORY_GROWTH=" + (allowMemoryGrowth ? 1 : 0)
 
-		commandLine += " -s ASM_JS=" + (asmJs ? 1 : 0)
+		commandLine.addAll "-s", "USE_TYPED_ARRAYS=" + typedArraySupport
 
-		commandLine += " -s RESERVED_FUNCTION_POINTERS=" + reservedFunctionPointers
+		commandLine.addAll "-s", "ASM_JS=" + (asmJs ? 1 : 0)
 
-		commandLine += " -s TOTAL_MEMORY=" + totalMemory
+		commandLine.addAll "-s", "RESERVED_FUNCTION_POINTERS=" + reservedFunctionPointers
+
+		commandLine.addAll "-s", "TOTAL_MEMORY=" + totalMemory
 
 		if (exportedFunctions != null && exportedFunctions.size() > 0) {
-			commandLine += " -s EXPORTED_FUNCTIONS=['" + exportedFunctions.join("','") + "']";
+			commandLine.addAll "-s", "EXPORTED_FUNCTIONS=['" + exportedFunctions.join("','") + "']";
 		}
 
 		if (deadFunctions != null && deadFunctions.size() > 0) {
-			commandLine += " -s DEAD_FUNCTIONS=['" + deadFunctions.join("','") + "']";
+			commandLine.addAll "-s", "DEAD_FUNCTIONS=['" + deadFunctions.join("','") + "']";
 		}
 
-		logger.info("Executing: ${commandLine}")
+		logger.info("Executing: ${commandLine.join(" ")}")
 
 		def proc = commandLine.execute(
 			[
