@@ -88,7 +88,7 @@ glyph_func = harfbuzz.callback harfbuzz.Bool, "glyph_func", {
 		glyph: harfbuzz.ptr(harfbuzz.hb_codepoint_t),
 		user_data: harfbuzz.ptr(harfbuzz.Void)
 	}, (font, font_data, unicode, variant_selector, glyph, user_data) ->
-		harfbuzz.setValue glyph.address, unicode, "i32"
+		harfbuzz.setValue glyph.getAddress(), unicode, "i32"
 		console.log "Called with unicode: #{unicode}, glyph is #{glyph.get()}"
 
 		return true
