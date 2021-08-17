@@ -7,7 +7,7 @@ It uses [Emscripten](https://github.com/kripken/emscripten) to compile the code 
 ## How to build
 
 You will need [Ragel](http://www.complang.org/ragel/) installed, as HarfBuzz is using it.
-Other tools will be installed automatially.
+Other tools will be installed automatically.
 
     ./gradlew assemble
 
